@@ -17,18 +17,33 @@ namespace restfulback.Services
             _mapper = mapper;
         }
 
-        
+
         public async Task<ApiResponse> RegisterDeceased(AddDeceasedData request)
         {
+            Console.WriteLine("this is called");
             if (request is null)
             {
                 return new ApiResponse
                 {
-                    Message = "Could Upload The Information",
+                    Message = "Please provide missing information",
                     StatusCode = 400
                 };
             }
-
+            Console.WriteLine(request.FullName,
+                 request.Gender,
+                 request.DateOfBirth,
+                request.DateOfDeath,
+                request.Age,
+                request.Address,
+                 request.CauseOfDeath,
+                 request.CHINumber,
+                 request.NextOfKinName,
+                request.NextOfKinGender,
+                 request.RelationshipToDeceased,
+                 request.NextOfKinEmail,
+                 request.NextOfKinPhone,
+                 request.NextOfKinAddress,
+                 request.RegistrationOffice);
             var deceased = new DeceasedProfile
             {
                 FullName = request.FullName,
@@ -61,18 +76,18 @@ namespace restfulback.Services
 
         public async Task<ApiDataResponse<DeceasedData>> GetDeceasedInfo(Guid Id)
         {
-           var profile = await _applicationDb.DeceasedProfiles.FindAsync(Id);
-           if(profile  == null)
-           {
+            var profile = await _applicationDb.DeceasedProfiles.FindAsync(Id);
+            if (profile == null)
+            {
+                return new ApiDataResponse<DeceasedData>
+                {
+                    Data = null,
+                    Message = "Profile Not Found",
+                    StatusCode = 404
+                };
+            }
+            var profileData = _mapper.Map<DeceasedData>(profile);
             return new ApiDataResponse<DeceasedData>
-             {
-                Data = null,
-                Message = "Profile Not Found",
-                StatusCode = 404
-             };
-           }
-           var profileData = _mapper.Map<DeceasedData>(profile);
-           return new ApiDataResponse<DeceasedData>
             {
                 Data = profileData,
                 StatusCode = 200
@@ -92,7 +107,7 @@ namespace restfulback.Services
 
         public async Task<ApiDataResponse<string>> Login(AccessDto request)
         {
-            if(request == null)
+            if (request == null)
             {
                 return new ApiDataResponse<string>
                 {
@@ -101,8 +116,8 @@ namespace restfulback.Services
                     StatusCode = 400
                 };
             }
-            var user = await _applicationDb.Users.FirstOrDefaultAsync(p=>p.UserName == request.UserName);
-            if(user == null)
+            var user = await _applicationDb.Users.FirstOrDefaultAsync(p => p.UserName == request.UserName);
+            if (user == null)
             {
                 return new ApiDataResponse<string>
                 {
@@ -117,6 +132,15 @@ namespace restfulback.Services
                 Message = "Account Verified Successfully",
                 StatusCode = 200
             };
+        }
+
+        public async Task<List<DeceasedData>> SearchForInformation(string search)
+        {
+            var info = await _applicationDb.DeceasedProfiles
+        .Where(c => c.FullName.ToLower().Contains(search.ToLower()))
+        .ToListAsync();
+            var profileData = _mapper.Map<List<DeceasedData>>(info);
+            return profileData;
         }
     }
 

@@ -11,6 +11,7 @@ namespace restfulback.Services
         Task<ApiDataResponse<DeceasedData>> GetDeceasedInfo(Guid Id);
         Task<ApiDataResponse<List<DeceasedData>>> AllRegisteredData();
         Task<ApiDataResponse<string>> Login(AccessDto request);
+        Task<List<DeceasedData>> SearchForInformation(string search);
         
     }
 }

@@ -17,6 +17,7 @@ namespace restfulback.Controllers
         [HttpPost("register_deceased")]
         public async Task<ActionResult<ApiResponse>> RegisterDeceasedPerson([FromBody] AddDeceasedData request)
         {
+            Console.WriteLine("hello");
             var response = await _adminService.RegisterDeceased(request);
             if(response.StatusCode !=200)
             {
@@ -45,6 +46,13 @@ namespace restfulback.Controllers
             var response = await _adminService.Login(request);
             
              return response;
+        }
+
+        [HttpGet("search")]
+        public async Task<List<DeceasedData>> CheckForInformation([FromQuery] string query)
+        {
+            var response = await _adminService.SearchForInformation(query);
+            return response;
         }
     }
 }
